@@ -8,6 +8,7 @@ Small Windows **HTA** tool to quickly find and open Adobe **Scripts** folders.
 * Shows installed apps and versions
 * Opens the matching **Scripts** folder in Explorer
 * Lets you enter a custom path when needed
+![ScriptSelectah](https://github.com/user-attachments/assets/44faaa1a-1cfe-4878-8ac2-830b54098458)
 
 ## Why
 
