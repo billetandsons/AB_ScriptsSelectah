@@ -1,4 +1,4 @@
-# OpenAdobeScripts.hta
+# AB_ScriptSelectah
 
 Small Windows **HTA** tool to quickly find and open Adobe **Scripts** folders.
 
