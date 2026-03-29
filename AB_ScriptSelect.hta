@@ -1,0 +1,565 @@
+<html>
+<head>
+<title>Open Adobe Scripts Folder</title>
+<HTA:APPLICATION
+  ID="OpenAdobeScripts"
+  APPLICATIONNAME="Open Adobe Scripts Folder"
+  SCROLL="auto"
+  SINGLEINSTANCE="yes"
+  WINDOWSTATE="normal"
+  INNERBORDER="no"
+  BORDER="thin"
+  CAPTION="yes"
+  MAXIMIZEBUTTON="no"
+  MINIMIZEBUTTON="yes"
+/>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 24px;
+    width: 760px;
+    background: #151515;
+    color: #f2f2f2;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+  }
+
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.2px;
+  }
+
+  .subtitle {
+    margin: 0 0 22px 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: #d2d2d2;
+  }
+
+  .app-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 10px 0;
+  }
+
+  .app-label {
+    width: 185px;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+
+  .app-icon {
+    display: block;
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 3px;
+  }
+
+  .app-name {
+    display: block;
+    font-size: 15px;
+    color: #e1e1e1;
+    line-height: 1.25;
+  }
+
+  .ver-cluster {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .ver-btn {
+    min-width: 88px;
+    padding: 10px 16px;
+    background: #242424;
+    color: #ffffff;
+    border: 1px solid #505050;
+    border-left-width: 5px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .ver-btn:hover {
+    background: #313131;
+    border-color: #7a7a7a;
+  }
+
+  .ver-btn:active {
+    background: #3c3c3c;
+  }
+
+  .ver-btn.missing {
+    opacity: 0.72;
+    color: #dfdfdf;
+  }
+
+  .not-installed {
+    display: inline-block;
+    padding-top: 9px;
+    font-size: 15px;
+    color: #b8b8b8;
+    font-style: italic;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #343434;
+    margin: 8px 0;
+  }
+
+  .custom-wrap {
+    margin-top: 18px;
+    padding-top: 8px;
+  }
+
+  .custom-label {
+    font-size: 15px;
+    color: #efefef;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .custom-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .custom-input {
+    flex: 1;
+    background: #222222;
+    color: #ffffff;
+    border: 1px solid #5c5c5c;
+    border-radius: 8px;
+    padding: 11px 12px;
+    font-size: 15px;
+    outline: none;
+  }
+
+  .custom-input:focus {
+    border-color: #909090;
+  }
+
+  .custom-btn {
+    background: #2d2d2d;
+    color: #ffffff;
+    border: 1px solid #666666;
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .custom-btn:hover {
+    background: #3a3a3a;
+    border-color: #8a8a8a;
+  }
+
+  .status {
+    margin-top: 14px;
+    min-height: 22px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #d7d7d7;
+    word-break: break-word;
+  }
+
+  .debug {
+    margin-top: 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #a9a9a9;
+    word-break: break-word;
+  }
+
+  .hint {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #c8c8c8;
+  }
+
+  .c-ae { border-left-color: #9b8cff; }
+  .c-pr { border-left-color: #8a73ff; }
+  .c-ps { border-left-color: #4ea1ff; }
+  .c-ai { border-left-color: #ffbf38; }
+  .c-id { border-left-color: #ff5c79; }
+  .c-au { border-left-color: #4fd2ff; }
+  .c-me { border-left-color: #b07bff; }
+
+  .ic-ae { color: #b8aeff; }
+  .ic-pr { color: #9f8cff; }
+  .ic-ps { color: #6db4ff; }
+  .ic-ai { color: #ffd15c; }
+  .ic-id { color: #ff7b96; }
+  .ic-au { color: #72dcff; }
+  .ic-me { color: #c095ff; }
+</style>
+</head>
+<body>
+
+<h1>Open Adobe Scripts Folder</h1>
+<p class="subtitle">
+Detected Adobe installs. Click a version to open its Scripts folder. Dim buttons mean the app was found, but the script folder itself was not found, so the install root will open instead.
+</p>
+
+<div id="appList"></div>
+
+<hr class="divider">
+
+<div class="custom-wrap">
+  <div class="custom-label">Open any folder manually</div>
+  <div class="custom-row">
+    <input class="custom-input" id="customPath" type="text" placeholder="Choose any folder..." />
+    <button class="custom-btn" onclick="browseForFolder()">Browse</button>
+    <button class="custom-btn" onclick="openCustom()">Open</button>
+  </div>
+  <div class="hint">You can also point this at an app folder directly if you just want to jump there.</div>
+</div>
+
+<p class="status" id="status"></p>
+<p class="debug" id="debug"></p>
+
+<script language="JScript">
+var fso   = new ActiveXObject("Scripting.FileSystemObject");
+var sh    = new ActiveXObject("WScript.Shell");
+var shApp = new ActiveXObject("Shell.Application");
+
+function uniqPush(arr, value) {
+  if (!value) return;
+  var v = (value + "").toLowerCase();
+  for (var i = 0; i < arr.length; i++) {
+    if ((arr[i] + "").toLowerCase() == v) return;
+  }
+  arr.push(value);
+}
+
+function normalizePath(path) {
+  return (path || "").replace(/[\/]+/g, "\\").replace(/\\+$/, "");
+}
+
+function joinPath(a, b) {
+  a = normalizePath(a);
+  b = (b || "").replace(/^[\\\/]+/, "");
+  return a + "\\" + b;
+}
+
+function folderExists(path) {
+  try { return fso.FolderExists(path); }
+  catch (e) { return false; }
+}
+
+function setStatus(msg) {
+  document.getElementById("status").innerHTML = msg || "";
+}
+
+function setDebug(msg) {
+  document.getElementById("debug").innerHTML = msg || "";
+}
+
+function openFolder(path) {
+  try {
+    shApp.Open(path);
+  } catch (e) {
+    sh.Run('explorer.exe "' + path + '"', 1, false);
+  }
+}
+
+function getSubFolders(path) {
+  var results = [];
+  if (!folderExists(path)) return results;
+
+  try {
+    var folder = fso.GetFolder(path);
+    var en = new Enumerator(folder.SubFolders);
+    for (; !en.atEnd(); en.moveNext()) {
+      results.push(en.item().Name);
+    }
+  } catch (e) {}
+
+  return results;
+}
+
+function versionScore(ver) {
+  var m = (ver + "").match(/20\d{2}/);
+  if (m) return parseInt(m[0], 10);
+
+  m = (ver + "").match(/\d+/);
+  if (m) return parseInt(m[0], 10);
+
+  return 0;
+}
+
+function extractVersion(folderName) {
+  var m = (folderName + "").match(/(20\d{2}|\d+(?:\.\d+)?)(?!.*(20\d{2}|\d+(?:\.\d+)?))/);
+  if (m) return m[1];
+  if ((folderName + "").match(/\bCC\b/i)) return "CC";
+  return "Unknown";
+}
+
+function matchesApp(folderName, aliases) {
+  var f = (folderName + "").toLowerCase();
+  for (var i = 0; i < aliases.length; i++) {
+    if (f.indexOf((aliases[i] + "").toLowerCase()) !== -1) return true;
+  }
+  return false;
+}
+
+function findLocaleScriptsUnderPresets(appRoot) {
+  var presets = joinPath(appRoot, "Presets");
+  if (!folderExists(presets)) return null;
+
+  var sub = getSubFolders(presets);
+  for (var i = 0; i < sub.length; i++) {
+    var p = joinPath(joinPath(presets, sub[i]), "Scripts");
+    if (folderExists(p)) return p;
+  }
+
+  var directScripts = joinPath(presets, "Scripts");
+  if (folderExists(directScripts)) return directScripts;
+
+  return null;
+}
+
+function detectScriptsFolder(appId, appRoot) {
+  var candidates = [];
+  var i, p;
+
+  if (appId == "ae") {
+    candidates = [
+      "Support Files\\Scripts",
+      "Scripts"
+    ];
+  } else if (appId == "pr") {
+    candidates = [
+      "Scripts"
+    ];
+  } else if (appId == "ps") {
+    candidates = [
+      "Presets\\Scripts",
+      "Required\\Plug-Ins\\Extensions\\Scripts"
+    ];
+  } else if (appId == "ai") {
+    p = findLocaleScriptsUnderPresets(appRoot);
+    if (p) return p;
+    candidates = [
+      "Presets\\Scripts"
+    ];
+  } else if (appId == "id") {
+    candidates = [
+      "Scripts\\Scripts Panel",
+      "Scripts"
+    ];
+  } else if (appId == "au") {
+    candidates = [
+      "Scripts"
+    ];
+  } else if (appId == "me") {
+    candidates = [
+      "Scripts"
+    ];
+  }
+
+  for (i = 0; i < candidates.length; i++) {
+    p = joinPath(appRoot, candidates[i]);
+    if (folderExists(p)) return p;
+  }
+
+  return null;
+}
+
+function browseForFolder() {
+  try {
+    var folder = shApp.BrowseForFolder(0, "Select folder", 0);
+    if (folder && folder.Self && folder.Self.Path) {
+      document.getElementById("customPath").value = folder.Self.Path;
+      setStatus("Selected: " + folder.Self.Path);
+    }
+  } catch (e) {
+    setStatus("Folder picker failed: " + e.message);
+  }
+}
+
+function openCustom() {
+  var p = document.getElementById("customPath").value.replace(/^\s+|\s+$/g, "");
+  if (!p) {
+    setStatus("Choose a folder first.");
+    return;
+  }
+
+  p = normalizePath(p);
+
+  if (folderExists(p)) {
+    openFolder(p);
+    setStatus("Opened: " + p);
+  } else {
+    setStatus("Not found: " + p);
+  }
+}
+
+var ROOTS = [];
+uniqPush(ROOTS, "C:\\Program Files\\Adobe");
+uniqPush(ROOTS, "C:\\Program Files (x86)\\Adobe");
+
+try { uniqPush(ROOTS, sh.ExpandEnvironmentStrings("%ProgramW6432%") + "\\Adobe"); } catch(e) {}
+try { uniqPush(ROOTS, sh.ExpandEnvironmentStrings("%ProgramFiles%") + "\\Adobe"); } catch(e) {}
+try { uniqPush(ROOTS, sh.ExpandEnvironmentStrings("%ProgramFiles(x86)%") + "\\Adobe"); } catch(e) {}
+
+var filteredRoots = [];
+for (var i = 0; i < ROOTS.length; i++) {
+  try {
+    if (ROOTS[i] && folderExists(ROOTS[i])) uniqPush(filteredRoots, ROOTS[i]);
+  } catch (e) {}
+}
+ROOTS = filteredRoots;
+
+var APPS = [
+  { id:"ae", icon:"Ae", name:"After Effects", aliases:["after effects"] },
+  { id:"pr", icon:"Pr", name:"Premiere Pro", aliases:["premiere pro"] },
+  { id:"ps", icon:"Ps", name:"Photoshop", aliases:["photoshop"] },
+  { id:"ai", icon:"Ai", name:"Illustrator", aliases:["illustrator"] },
+  { id:"id", icon:"Id", name:"InDesign", aliases:["indesign", "in design"] },
+  { id:"au", icon:"Au", name:"Audition", aliases:["audition"] },
+  { id:"me", icon:"Me", name:"Media Encoder", aliases:["media encoder"] }
+];
+
+function findAllVersions(app) {
+  var hits = [];
+  var seen = {};
+
+  for (var r = 0; r < ROOTS.length; r++) {
+    var adobeRoot = ROOTS[r];
+    var subFolders = getSubFolders(adobeRoot);
+
+    for (var i = 0; i < subFolders.length; i++) {
+      var folderName = subFolders[i];
+      if (!matchesApp(folderName, app.aliases)) continue;
+
+      var installRoot = joinPath(adobeRoot, folderName);
+      var scriptsPath = detectScriptsFolder(app.id, installRoot);
+      var version = extractVersion(folderName);
+      var key = installRoot.toLowerCase();
+
+      if (seen[key]) continue;
+      seen[key] = true;
+
+      hits.push({
+        version: version,
+        score: versionScore(version),
+        path: scriptsPath,
+        scriptsOk: !!scriptsPath,
+        installRoot: installRoot,
+        folderName: folderName
+      });
+    }
+  }
+
+  hits.sort(function(a, b) {
+    if (a.version == "CC" && b.version != "CC") return 1;
+    if (b.version == "CC" && a.version != "CC") return -1;
+    if (b.score != a.score) return b.score - a.score;
+    if (a.folderName < b.folderName) return 1;
+    if (a.folderName > b.folderName) return -1;
+    return 0;
+  });
+
+  return hits;
+}
+
+(function buildUI() {
+  var list = document.getElementById("appList");
+  var debugInfo = [];
+
+  if (ROOTS.length === 0) {
+    setStatus("No Adobe root folders were found.");
+  }
+
+  for (var rr = 0; rr < ROOTS.length; rr++) {
+    debugInfo.push("Scan root: " + ROOTS[rr] + " (ok)");
+  }
+
+  for (var i = 0; i < APPS.length; i++) {
+    var app = APPS[i];
+    var versions = findAllVersions(app);
+
+    var group = document.createElement("div");
+    group.className = "app-group";
+
+    var label = document.createElement("div");
+    label.className = "app-label";
+    label.innerHTML =
+      "<span class='app-icon ic-" + app.id + "'>" + app.icon + "</span>" +
+      "<span class='app-name'>" + app.name + "</span>";
+    group.appendChild(label);
+
+    var cluster = document.createElement("div");
+    cluster.className = "ver-cluster";
+
+    if (versions.length === 0) {
+      var none = document.createElement("span");
+      none.className = "not-installed";
+      none.innerText = "not installed";
+      cluster.appendChild(none);
+    } else {
+      for (var v = 0; v < versions.length; v++) {
+        (function(ver, appId, appName) {
+          var btn = document.createElement("button");
+          btn.className = "ver-btn c-" + appId + (ver.scriptsOk ? "" : " missing");
+          btn.innerText = ver.version;
+          btn.title = ver.scriptsOk ? ver.path : ver.installRoot;
+
+          btn.onclick = function() {
+            if (ver.scriptsOk) {
+              openFolder(ver.path);
+              setStatus("Opened " + appName + " " + ver.version + ": " + ver.path);
+            } else if (folderExists(ver.installRoot)) {
+              openFolder(ver.installRoot);
+              setStatus("Scripts folder not found. Opened install root instead: " + ver.installRoot);
+            } else {
+              setStatus("Cannot find install root: " + ver.installRoot);
+            }
+          };
+
+          cluster.appendChild(btn);
+        })(versions[v], app.id, app.name);
+      }
+    }
+
+    group.appendChild(cluster);
+    list.appendChild(group);
+
+    if (i < APPS.length - 1) {
+      var rule = document.createElement("hr");
+      rule.className = "divider";
+      list.appendChild(rule);
+    }
+  }
+
+  setDebug(debugInfo.join("<br>"));
+})();
+
+window.setTimeout(function() {
+  var w = 820;
+  var h = Math.min(document.body.scrollHeight + 70, 900);
+  window.resizeTo(w, h);
+  window.moveTo(
+    Math.max(0, (screen.width - w) / 2),
+    Math.max(0, (screen.height - h) / 2)
+  );
+}, 150);
+</script>
+</body>
+</html>
